@@ -1,20 +1,20 @@
 # Typographic Logo Prompt Blueprint
 
-Use this reference when creating premium text-centered title/logo images.
+Use this reference after reading `generation-spec.md`. The user may provide only raw words/phrases; infer all visual direction from the text.
 
 ## Base Prompt Structure
 
 ```text
 Use case: logo-brand / typographic concept art.
-Asset type: transparent PNG title/logo, final canvas 1360px wide x 560px tall.
-Primary request: Create a top-tier typographic concept image for this title/word.
+Asset type: transparent PNG title/logo, final canvas 1360px wide x 560px tall unless the user asks for another size.
+Primary request: Create a top-tier typographic concept image for the submitted title/word.
 Text (verbatim, exact characters): "<TEXT>"
 
 Core rule: "<TEXT>" must be the largest, strongest, first-read visual subject, occupying more than 50-60% of the image area. The text must be perfectly readable. No extra words.
 
 Meaning and metaphor: <semantic interpretation, emotional type, deep metaphor, non-cliche symbols>.
 Style: <style derived from meaning, not a fixed template>.
-Composition: horizontal or ratio-aware title mark centered on a 1360x560 transparent canvas. Large custom lettering dominates; auxiliary elements must remain secondary.
+Composition: choose the internal composition ratio from the word's spatial metaphor, but export on a 1360x560 transparent canvas. Large custom lettering dominates; auxiliary elements must remain secondary.
 Color palette: <meaning-driven colors, restrained and premium>.
 Materials/textures: <meaning-driven typography material; avoid cheap 3D>.
 Constraints: transparent background, exact text only, no watermark, no logo, no QR code, no extra caption, no fake characters, no misspelling, no background rectangle, no poster scene.
@@ -53,6 +53,8 @@ Constraints: transparent background, exact text only, no watermark, no logo, no 
 - Anxiety: compressed space, misaligned repeats, dense information, tense shadows.
 - Time: ghosting, repetition, erosion, paper, delay, irreversible traces.
 - Depth: nested layers, apertures, shadow gradients, internal space.
+
+Do not hard-code these examples into outputs. They are heuristics only; every submitted text needs its own semantic pass.
 
 ## Final QA
 
