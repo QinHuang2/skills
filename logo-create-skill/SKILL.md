@@ -1,13 +1,13 @@
 ---
 name: logo-create-skill
-description: Create premium transparent typographic title/logo images from user-provided words, phrases, Chinese program names, English titles, brand words, or short slogans. Use when the user asks to generate, redesign, batch-create, or export word-centered logo/title artwork, especially transparent PNG assets at 1360x560 or similar banner ratios where the text itself must be the dominant custom-designed visual subject.
+description: Create premium transparent typographic title/logo images from only user-provided words or phrases. Use when the user submits words, Chinese/English titles, program names, brand words, concept words, or short slogans and wants Codex to generate one transparent PNG per text item with the text as the dominant custom-designed visual subject, following strict typography-first rules, semantic metaphor analysis, exact text rendering, and 1360x560 output validation.
 ---
 
 # Logo Create Skill
 
 ## Overview
 
-Create one transparent PNG per requested word or phrase. Treat the exact text as the product: the lettering must be the largest, clearest, most memorable visual subject, with every metaphor, ornament, and material choice serving the text.
+Create one transparent PNG per requested word or phrase. The user only needs to submit the target text; infer the rest. Treat the exact text as the product: the lettering must be the largest, clearest, most memorable visual subject, with every metaphor, ornament, and material choice serving the text.
 
 Use this skill for title-logo style assets such as TV/film program names, campaign words, concept words, Chinese title marks, English title marks, and batch wordmark generation. Do not use it for generic app UI, ordinary posters, icons, or diagrams.
 
@@ -15,13 +15,14 @@ Use this skill for title-logo style assets such as TV/film program names, campai
 
 1. Read the user's exact words and preserve spelling/characters verbatim.
 2. For each word/phrase, infer its semantic type, emotional pressure, cultural associations, core metaphor, visual movement, and best composition.
-3. Write a separate image-generation prompt for each phrase. Use `references/prompt-blueprint.md` when the request is visual, high-stakes, batch-based, or underspecified.
-4. Generate one image per phrase with the built-in `image_gen` tool.
-5. Inspect each result for text accuracy, dominance, composition, and whether the background is truly transparent.
-6. If the generated PNG lacks alpha or contains a checkerboard/flat removable background, run `scripts/finalize_transparent_png.py` to remove the background and resize/canvas-fit the final asset.
-7. Save final deliverables into the current project, preferably `生成图片/` for Chinese projects or `generated-images/` otherwise.
-8. Verify final files with `sips -g pixelWidth -g pixelHeight -g hasAlpha <files>` or an equivalent image inspection command.
-9. Report final paths and mention any limitation, especially if a model misspelled text or if transparency required post-processing.
+3. Read `references/generation-spec.md` before building prompts unless the user explicitly asks for a quick draft. This file contains the strict visual rules adapted from the original project `spec.md`.
+4. Write a separate image-generation prompt for each phrase using `references/prompt-blueprint.md`.
+5. Generate one image per phrase with the built-in `image_gen` tool.
+6. Inspect each result for text accuracy, dominance, composition, and whether the background is truly transparent.
+7. If the generated PNG lacks alpha or contains a checkerboard/flat removable background, run `scripts/finalize_transparent_png.py` to remove the background and resize/canvas-fit the final asset.
+8. Save final deliverables into the current project, preferably `生成图片/` for Chinese projects or `generated-images/` otherwise.
+9. Verify final files with `sips -g pixelWidth -g pixelHeight -g hasAlpha <files>` or an equivalent image inspection command.
+10. Report final paths and mention any limitation, especially if a model misspelled text or if transparency required post-processing.
 
 ## Prompt Rules
 
@@ -59,16 +60,7 @@ Default final size is `1360x560` PNG with alpha unless the user provides another
 
 ## Batch Naming
 
-For multiple phrases, name outputs exactly from the phrase when filesystem-safe:
-
-```text
-生成图片/天才游戏.png
-生成图片/我的妈耶.png
-生成图片/731.png
-生成图片/不要错过你.png
-```
-
-If a phrase contains path separators or unsafe characters, replace them with hyphens while preserving the displayed text inside the image.
+For multiple phrases, name each output from the submitted phrase when filesystem-safe. If a phrase contains path separators or unsafe characters, replace them with hyphens while preserving the displayed text inside the image.
 
 ## Post-Processing
 
