@@ -1,4 +1,4 @@
 interface:
   display_name: "Logo Create Skill"
-  short_description: "Create premium transparent typographic title logos from words."
-  default_prompt: "Create transparent typographic title logo images for these words:"
+  short_description: "Submit words only; generate premium transparent typographic title logos."
+  default_prompt: "Use logo-create-skill to generate transparent typographic title logo images for these words:"
