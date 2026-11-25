@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vertical Shorts Editor"
+  short_description: "Edit 9:16 talking-head shorts with karaoke captions, punch-in cuts, safe-zone checks, and FFmpeg/Remotion rendering."
+  default_prompt: "Use vertical-shorts-editor to build a validated 9:16 editing plan.json and compile a polished vertical short for:"

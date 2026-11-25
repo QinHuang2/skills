@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Design Studio"
+  short_description: "Design high-craft HTML UI prototypes, posters, infographics, and editable PPTX decks with 3-direction proposals."
+  default_prompt: "Use html-design-studio to propose three distinct visual directions and craft a designer-grade HTML artifact for:"

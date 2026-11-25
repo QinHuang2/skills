@@ -1,0 +1,4 @@
+interface:
+  display_name: "Motion Launch Director"
+  short_description: "Direct deterministic HTML/JS product launch films with procedural sound, frame-pin studio, and contact-sheet QA."
+  default_prompt: "Use motion-launch-director to design, score, and build a deterministic product launch motion film for:"

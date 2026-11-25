@@ -1,0 +1,4 @@
+interface:
+  display_name: "SRT Whiteboard Animator"
+  short_description: "Turn .srt subtitle timelines into warm-paper hand-drawn ink-to-color whiteboard explainer videos."
+  default_prompt: "Use srt-whiteboard-animator to turn this .srt subtitle file into a hand-drawn whiteboard animation video:"

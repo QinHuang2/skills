@@ -1,0 +1,4 @@
+interface:
+  display_name: "Isometric Anatomy"
+  short_description: "Explain abstract technical systems and algorithms as interactive isometric mechanical machines in HTML/SVG."
+  default_prompt: "Use isometric-anatomy to build an interactive isometric mechanical machine illustration explaining:"

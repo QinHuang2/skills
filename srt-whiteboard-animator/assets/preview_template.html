@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whiteboard Scene Preview — __SCENE_ID__</title>
+  <style>
+    :root { --paper: #F5EBD7; --ink: #2B2B2B; --accent: #D9534F; --blue: #2E6B9E; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1C1917; color: #F5F5F4;
+      font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "PingFang SC", sans-serif;
+      padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    header { max-width: 1120px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+    .stage-wrap {
+      position: relative; max-width: 1120px; width: 100%; aspect-ratio: 16 / 9;
+      background: var(--paper); border-radius: 10px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    #plate-img { width: 100%; height: 100%; object-fit: fill; display: block; }
+    #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .hud {
+      max-width: 1120px; width: 100%; background: #292524; padding: 14px 18px;
+      border-radius: 10px; display: flex; align-items: center; gap: 14px;
+      font-variant-numeric: tabular-nums; font-size: 13px;
+    }
+    button {
+      background: var(--accent); color: #fff; border: none; border-radius: 6px;
+      padding: 7px 14px; font-weight: 600; cursor: pointer;
+    }
+    input[type="range"] { flex: 1; accent-color: var(--accent); }
+    #caption-bar {
+      max-width: 1120px; width: 100%; min-height: 42px; padding: 10px 16px;
+      background: #292524; border-left: 4px solid var(--blue); border-radius: 6px; font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>SRT Whiteboard Preview: __SCENE_ID__</h2>
+    <label style="font-size:13px;"><input type="checkbox" id="toggle-boxes" checked /> Show Region Bounds</label>
+  </header>
+
+  <div class="stage-wrap">
+    <img id="plate-img" src="__IMAGE_SRC__" alt="Scene Plate" />
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <div id="caption-bar">Ready to preview subtitle-driven ink &rarr; color sequence.</div>
+
+  <div class="hud">
+    <button id="play-btn" type="button">Play</button>
+    <span id="time-lbl">0.0s / 0.0s</span>
+    <input id="scrub" type="range" min="0" max="1000" value="0" />
+  </div>
+
+  <script>
+    const ANNOTATION = __ANNOTATION_JSON__;
+    const canvas = document.getElementById("overlay");
+    const ctx = canvas.getContext("2d");
+    canvas.width = ANNOTATION.canvasWidth || 1920;
+    canvas.height = ANNOTATION.canvasHeight || 1080;
+
+    const scrub = document.getElementById("scrub");
+    scrub.max = String(ANNOTATION.durationMs || 10000);
+    const timeLbl = document.getElementById("time-lbl");
+    const captionBar = document.getElementById("caption-bar");
+    const showBoxes = document.getElementById("toggle-boxes");
+
+    let curMs = 0;
+    let playing = false;
+
+    function renderAt(ms) {
+      curMs = Math.max(0, Math.min(ANNOTATION.durationMs, ms));
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const paper = ANNOTATION.paperColor || "#F5EBD7";
+      let activeSub = "";
+
+      for (const r of ANNOTATION.regions) {
+        const dur = Math.max(1, r.endMs - r.startMs);
+        const p = (curMs - r.startMs) / dur;
+        if (curMs >= r.startMs && curMs <= r.endMs) {
+          activeSub = `[#${r.sequence}] ${r.subtitleText || r.id}`;
+        }
+
+        if (p <= 0) {
+          ctx.fillStyle = paper;
+          ctx.fillRect(r.x, r.y, r.w, r.h);
+        } else if (p < 1) {
+          const inkEnd = r.inkRatio || 0.65;
+          if (p < inkEnd) {
+            const sp = p / inkEnd;
+            if (r.sweep === "top-to-bottom") {
+              const drawnH = r.h * sp;
+              ctx.fillStyle = "rgba(245, 235, 215, 0.38)";
+              ctx.fillRect(r.x, r.y, r.w, drawnH);
+              ctx.fillStyle = paper;
+              ctx.fillRect(r.x, r.y + drawnH, r.w, r.h - drawnH);
+            } else {
+              const drawnW = r.w * sp;
+              ctx.fillStyle = "rgba(245, 235, 215, 0.38)";
+              ctx.fillRect(r.x, r.y, drawnW, r.h);
+              ctx.fillStyle = paper;
+              ctx.fillRect(r.x + drawnW, r.y, r.w - drawnW, r.h);
+            }
+          } else {
+            const cp = (p - inkEnd) / Math.max(0.01, 1 - inkEnd);
+            ctx.fillStyle = `rgba(245, 235, 215, ${(1 - cp) * 0.38})`;
+            ctx.fillRect(r.x, r.y, r.w, r.h);
+          }
+        }
+
+        if (showBoxes.checked) {
+          ctx.strokeStyle = r.protected ? "#2E6B9E" : "#E67E22";
+          ctx.lineWidth = 3;
+          ctx.setLineDash([8, 6]);
+          ctx.strokeRect(r.x, r.y, r.w, r.h);
+          ctx.setLineDash([]);
+          ctx.fillStyle = r.protected ? "#2E6B9E" : "#E67E22";
+          ctx.fillRect(r.x, r.y, 42, 28);
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "bold 16px sans-serif";
+          ctx.fillText(`#${r.sequence}`, r.x + 8, r.y + 20);
+        }
+      }
+
+      timeLbl.textContent = `${(curMs / 1000).toFixed(1)}s / ${(ANNOTATION.durationMs / 1000).toFixed(1)}s`;
+      scrub.value = String(Math.round(curMs));
+      if (activeSub) captionBar.textContent = activeSub;
+    }
+
+    let last = performance.now();
+    function loop(now) {
+      const dt = now - last;
+      last = now;
+      if (playing) {
+        const next = curMs + dt;
+        if (next >= ANNOTATION.durationMs) {
+          playing = false;
+          document.getElementById("play-btn").textContent = "Play";
+          renderAt(ANNOTATION.durationMs);
+        } else {
+          renderAt(next);
+        }
+      }
+      requestAnimationFrame(loop);
+    }
+
+    document.getElementById("play-btn").addEventListener("click", (e) => {
+      if (!playing && curMs >= ANNOTATION.durationMs) curMs = 0;
+      playing = !playing;
+      e.target.textContent = playing ? "Pause" : "Play";
+    });
+    scrub.addEventListener("input", (e) => {
+      playing = false;
+      document.getElementById("play-btn").textContent = "Play";
+      renderAt(Number(e.target.value));
+    });
+    showBoxes.addEventListener("change", () => renderAt(curMs));
+
+    renderAt(0);
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
